@@ -1,0 +1,151 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Keyboard Layout 3D Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/101/three.min.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <script src="js/TDSLoader.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <section class="section">
+        <h1 class="title">Keyboard Layout 3D Viewer</h1>
+        <div id="app">
+          <div class="field">
+            <label class="label">Keyboard Layout Editor JSON data (Raw data is not supported)</label>
+            <div class="control">
+              <textarea v-model="jsondata" placeholder="JSON data" class="textarea"></textarea>
+            </div>
+          </div>
+          <div class="field is-grouped">
+            <div class="control">
+              <label class="radio">
+                <input type="radio" value="perspective" v-model="camera">
+                Perspective camera
+              </label>
+              <label class="radio">
+                <input type="radio" value="ortographic" v-model="camera">
+                Orthographic camera
+              </label>
+            </div>
+            <div class="control">
+              <button id="renderBtn" v-on:click="renderKB" class="button is-dark">Render</button>
+            </div>
+          </div>
+          <div id="container"></div>
+        </div>
+      </section>
+    </div>
+  </body>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        camera: "perspective",
+        jsondata: "[[{\"x\":3.5},\"#\\n3\",{\"x\":10.5},\"*\\n8\"],[{\"y\":-0.875,\"x\":2.5},\"@\\n2\",{\"x\":1},\"$\\n4\",{\"x\":8.5},\"&\\n7\",{\"x\":1},\"(\\n9\"],[{\"y\":-0.875,\"x\":5.5},\"%\\n5\",{\"a\":7},\"\",{\"x\":4.5},\"\",{\"a\":4},\"^\\n6\"],[{\"y\":-0.875,\"a\":7,\"w\":1.5},\"\",{\"a\":4},\"!\\n1\",{\"x\":14.5},\")\\n0\",{\"a\":7,\"w\":1.5},\"\"],[{\"y\":-0.375,\"x\":3.5,\"a\":4},\"E\",{\"x\":10.5},\"I\"],[{\"y\":-0.875,\"x\":2.5},\"W\",{\"x\":1},\"R\",{\"x\":8.5},\"U\",{\"x\":1},\"O\"],[{\"y\":-0.875,\"x\":5.5},\"T\",{\"a\":7,\"h\":1.5},\"\",{\"x\":4.5,\"h\":1.5},\"\",{\"a\":4},\"Y\"],[{\"y\":-0.875,\"a\":7,\"w\":1.5},\"\",{\"a\":4},\"Q\",{\"x\":14.5},\"P\",{\"a\":7,\"w\":1.5},\"\"],[{\"y\":-0.375,\"x\":3.5,\"a\":4},\"D\",{\"x\":10.5},\"K\"],[{\"y\":-0.875,\"x\":2.5},\"S\",{\"x\":1},\"F\",{\"x\":8.5},\"J\",{\"x\":1},\"L\"],[{\"y\":-0.875,\"x\":5.5},\"G\",{\"x\":6.5},\"H\"],[{\"y\":-0.875,\"a\":7,\"w\":1.5},\"\",{\"a\":4},\"A\",{\"x\":14.5},\":\\n;\",{\"a\":7,\"w\":1.5},\"\"],[{\"y\":-0.625,\"x\":6.5,\"h\":1.5},\"\",{\"x\":4.5,\"h\":1.5},\"\"],[{\"y\":-0.75,\"x\":3.5,\"a\":4},\"C\",{\"x\":10.5},\"<\\n,\"],[{\"y\":-0.875,\"x\":2.5},\"X\",{\"x\":1},\"V\",{\"x\":8.5},\"M\",{\"x\":1},\">\\n.\"],[{\"y\":-0.875,\"x\":5.5},\"B\",{\"x\":6.5},\"N\"],[{\"y\":-0.875,\"a\":7,\"w\":1.5},\"\",{\"a\":4},\"Z\",{\"x\":14.5},\"?\\n/\",{\"a\":7,\"w\":1.5},\"\"],[{\"y\":-0.375,\"x\":3.5},\"\",{\"x\":10.5},\"\"],[{\"y\":-0.875,\"x\":2.5},\"\",{\"x\":1},\"\",{\"x\":8.5},\"\",{\"x\":1},\"\"],[{\"y\":-0.75,\"x\":0.5},\"\",\"\",{\"x\":14.5},\"\",\"\"],[{\"r\":30,\"rx\":6.5,\"ry\":4.25,\"y\":-1,\"x\":1},\"\",\"\"],[{\"h\":2},\"\",{\"h\":2},\"\",\"\"],[{\"x\":2},\"\"],[{\"r\":-30,\"rx\":13,\"y\":-1,\"x\":-3},\"\",\"\"],[{\"x\":-3},\"\",{\"h\":2},\"\",{\"h\":2},\"\"],[{\"x\":-3},\"\"]]"
+      },
+      methods: {
+        renderKB: function() {
+          const width = 960;
+          const height = 540;
+
+          var container = document.getElementById( 'container' );
+          container.innerHTML = "";
+
+          var renderer = new THREE.WebGLRenderer( { antialias: true } );
+          renderer.setPixelRatio( window.devicePixelRatio );
+          renderer.setSize( width, height );
+          renderer.gammaOutput = true;
+          renderer.gammaFactor = 2.2;
+
+          container.appendChild( renderer.domElement );
+          scene = new THREE.Scene();
+          scene.background = new THREE.Color( 0xf9f9f9 );
+          if (this.camera == "perspective") {
+            var camera = new THREE.PerspectiveCamera( 30, width / height, 1, 2000 );
+          } else {
+            var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 2000 );
+          }
+          camera.position.set( 0, 1000, 0 );
+
+          controls = new THREE.OrbitControls( camera, renderer.domElement );
+          controls.target.set( 0, 0.5, 0 );
+
+          scene.add( new THREE.AmbientLight( 0x404040 ) );
+          pointLight = new THREE.PointLight( 0xffffff, 1 );
+          pointLight.position.set( -1000, 700, -1000 );
+          scene.add( pointLight );
+
+          const plane = new THREE.GridHelper(1900, 100, 0x888888, 0x888888);
+          plane.position.y = 0;
+          scene.add(plane);
+
+          const keylayout = JSON.parse(this.jsondata)
+
+          const loader = new THREE.TDSLoader();
+          loader.setPath('./');
+
+          var x = 0;
+          var y = 0;
+          var w = 1;
+          var h = 1;
+          var r = 0;
+          var rx = 0;
+          var ry = 0;
+
+          keylayout.forEach(function(row, ri){
+            row.forEach(function(key){
+              if (typeof key == 'string') {
+                var px = x;
+                var py = y;
+                var pw = w;
+                var ph = h;
+                var pr = r;
+                var prx = rx;
+                var pry = ry;
+                loader.load('keycap.3ds', object => {
+                  console.log('x:' + px + ' y:' + py + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + pr + ' key: ' + key);
+                  object.position.x = (prx + Math.cos(pr) * px - Math.sin(pr) * py) * 19 - 190;
+                  object.position.z = (pry + Math.sin(pr) * px + Math.cos(pr) * py) * 19 - 95;
+                  object.scale.x = pw;
+                  object.scale.z = ph;
+                  object.rotation.y = -pr;
+                  scene.add(object);
+                });
+                x += w;
+                w = 1;
+                h = 1;
+              } else {
+                w = key.w ? key.w : 1;
+                h = key.h ? key.h : 1;
+                x = key.x ? x + key.x : x;
+                y = key.y ? y + key.y : y;
+                if (key.r || key.rx || key.ry) {
+                  r = key.r ? key.r / 180 * Math.PI : r;
+                  rx = key.rx ? key.rx : rx;
+                  ry = key.ry ? key.ry : ry;
+                  x = key.x ? key.x : 0;
+                  y = key.y ? key.y : 0;
+                };
+              }
+            });
+            x = 0;
+            y += 1;
+            w = 1;
+            h = 1;
+          });
+
+          tick();
+
+          function tick() {
+            renderer.render(scene, camera);
+            requestAnimationFrame(tick);
+          }
+        }
+      }
+    })
+  </script>
+</html>
