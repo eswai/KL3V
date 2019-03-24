@@ -2,4 +2,4 @@
 
 Keyboard layout 3D viewer is based on three.js and WebGL.
 
-https://kl3v.github.com/kl3v.html
+https://eswai.github.io/KL3V/kl3v.html
