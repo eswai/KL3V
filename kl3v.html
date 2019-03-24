@@ -96,46 +96,48 @@
           var rx = 0;
           var ry = 0;
 
-          keylayout.forEach(function(row, ri){
-            row.forEach(function(key){
-              if (typeof key == 'string') {
-                var px = x;
-                var py = y;
-                var pw = w;
-                var ph = h;
-                var pr = r;
-                var prx = rx;
-                var pry = ry;
-                loader.load('keycap.3ds', object => {
-                  console.log('x:' + px + ' y:' + py + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + pr + ' key: ' + key);
-                  object.position.x = (prx + Math.cos(pr) * px - Math.sin(pr) * py) * 19 - 190;
-                  object.position.z = (pry + Math.sin(pr) * px + Math.cos(pr) * py) * 19 - 95;
-                  object.scale.x = pw;
-                  object.scale.z = ph;
-                  object.rotation.y = -pr;
-                  scene.add(object);
-                });
-                x += w;
-                w = 1;
-                h = 1;
-              } else {
-                w = key.w ? key.w : 1;
-                h = key.h ? key.h : 1;
-                x = key.x ? x + key.x : x;
-                y = key.y ? y + key.y : y;
-                if (key.r || key.rx || key.ry) {
-                  r = key.r ? key.r / 180 * Math.PI : r;
-                  rx = key.rx ? key.rx : rx;
-                  ry = key.ry ? key.ry : ry;
-                  x = key.x ? key.x : 0;
-                  y = key.y ? key.y : 0;
-                };
-              }
-            });
-            x = 0;
-            y += 1;
-            w = 1;
-            h = 1;
+          keylayout.forEach(function(row){
+            if (Array.isArray(row)) {
+              row.forEach(function(key){
+                if (typeof key == 'string') {
+                  var px = x;
+                  var py = y;
+                  var pw = w;
+                  var ph = h;
+                  var pr = r;
+                  var prx = rx;
+                  var pry = ry;
+                  loader.load('keycap.3ds', object => {
+                    console.log('x:' + px + ' y:' + py + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + pr + ' key: ' + key);
+                    object.position.x = (prx + Math.cos(pr) * px - Math.sin(pr) * py) * 19 - 190;
+                    object.position.z = (pry + Math.sin(pr) * px + Math.cos(pr) * py) * 19 - 95;
+                    object.scale.x = pw;
+                    object.scale.z = ph;
+                    object.rotation.y = -pr;
+                    scene.add(object);
+                  });
+                  x += w;
+                  w = 1;
+                  h = 1;
+                } else {
+                  w = key.w ? key.w : 1;
+                  h = key.h ? key.h : 1;
+                  x = key.x ? x + key.x : x;
+                  y = key.y ? y + key.y : y;
+                  if (key.r || key.rx || key.ry) {
+                    r = key.r ? key.r / 180 * Math.PI : r;
+                    rx = key.rx ? key.rx : rx;
+                    ry = key.ry ? key.ry : ry;
+                    x = key.x ? key.x : 0;
+                    y = key.y ? key.y : 0;
+                  };
+                }
+              });
+              x = 0;
+              y += 1;
+              w = 1;
+              h = 1;
+            }
           });
 
           tick();
