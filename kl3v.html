@@ -87,57 +87,50 @@
 
           const loader = new THREE.TDSLoader();
           loader.setPath('./');
+          loader.load('keycap.3ds', keycap => {
+            var x = 0;
+            var y = 0;
+            var w = 1;
+            var h = 1;
+            var r = 0;
+            var rx = 0;
+            var ry = 0;
 
-          var x = 0;
-          var y = 0;
-          var w = 1;
-          var h = 1;
-          var r = 0;
-          var rx = 0;
-          var ry = 0;
-
-          keylayout.forEach(function(row){
-            if (Array.isArray(row)) {
-              row.forEach(function(key){
-                if (typeof key == 'string') {
-                  var px = x;
-                  var py = y;
-                  var pw = w;
-                  var ph = h;
-                  var pr = r;
-                  var prx = rx;
-                  var pry = ry;
-                  loader.load('keycap.3ds', object => {
-                    console.log('x:' + px + ' y:' + py + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + pr + ' key: ' + key);
-                    object.position.x = (prx + Math.cos(pr) * px - Math.sin(pr) * py) * 19 - 190;
-                    object.position.z = (pry + Math.sin(pr) * px + Math.cos(pr) * py) * 19 - 95;
-                    object.scale.x = pw * 19 / 18 - 1 / 18 ;
-                    object.scale.z = ph * 19 / 18 - 1 / 18;
-                    object.rotation.y = -pr;
-                    scene.add(object);
-                  });
-                  x += w;
-                  w = 1;
-                  h = 1;
-                } else {
-                  w = key.w ? key.w : 1;
-                  h = key.h ? key.h : 1;
-                  x = key.x ? x + key.x : x;
-                  y = key.y ? y + key.y : y;
-                  if (key.r || key.rx || key.ry) {
-                    r = key.r ? key.r / 180 * Math.PI : r;
-                    rx = key.rx ? key.rx : rx;
-                    ry = key.ry ? key.ry : ry;
-                    x = key.x ? key.x : 0;
-                    y = key.y ? key.y : 0;
-                  };
-                }
-              });
-              x = 0;
-              y += 1;
-              w = 1;
-              h = 1;
-            }
+            keylayout.forEach(function(row){
+              if (Array.isArray(row)) {
+                row.forEach(function(key){
+                  if (typeof key == 'string') {
+                    console.log('x:' + x + ' y:' + y + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + r + ' key: ' + key);
+                    kc = keycap.clone(true);
+                    kc.position.x = (rx + Math.cos(r) * x - Math.sin(r) * y) * 19 - 190;
+                    kc.position.z = (ry + Math.sin(r) * x + Math.cos(r) * y) * 19 - 95;
+                    kc.scale.x = w * 19 / 18 - 1 / 18 ;
+                    kc.scale.z = h * 19 / 18 - 1 / 18;
+                    kc.rotation.y = -r;
+                    scene.add(kc);
+                    x += w;
+                    w = 1;
+                    h = 1;
+                  } else {
+                    w = key.w ? key.w : 1;
+                    h = key.h ? key.h : 1;
+                    x = key.x ? x + key.x : x;
+                    y = key.y ? y + key.y : y;
+                    if (key.r || key.rx || key.ry) {
+                      r = key.r ? key.r / 180 * Math.PI : r;
+                      rx = key.rx ? key.rx : rx;
+                      ry = key.ry ? key.ry : ry;
+                      x = key.x ? key.x : 0;
+                      y = key.y ? key.y : 0;
+                    };
+                  }
+                });
+                x = 0;
+                y += 1;
+                w = 1;
+                h = 1;
+              }
+            });
           });
 
           tick();
