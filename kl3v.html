@@ -111,8 +111,8 @@
                     console.log('x:' + px + ' y:' + py + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + pr + ' key: ' + key);
                     object.position.x = (prx + Math.cos(pr) * px - Math.sin(pr) * py) * 19 - 190;
                     object.position.z = (pry + Math.sin(pr) * px + Math.cos(pr) * py) * 19 - 95;
-                    object.scale.x = pw;
-                    object.scale.z = ph;
+                    object.scale.x = pw * 19 / 18 - 1 / 18 ;
+                    object.scale.z = ph * 19 / 18 - 1 / 18;
                     object.rotation.y = -pr;
                     scene.add(object);
                   });
