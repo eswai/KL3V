@@ -37,6 +37,9 @@
           <div id="container"></div>
         </div>
       </section>
+      <section class="section">
+        SA keycaps (c) 2017 Josh Hinnebusch.
+      </section>
     </div>
   </body>
 
@@ -52,15 +55,24 @@
       created: function() {
         console.log("Loading keycaps...")
         const loader = new THREE.TDSLoader();
-        loader.setPath('./');
+        loader.setPath('./keycaps/');
+        loader.load('original.3ds', k => {
+          this.keycaps['Original'] = k
+        })
+        loader.load('sa-1u-r1.3ds', k => {
+          this.keycaps['SA R1'] = k
+        })
+        loader.load('sa-1u-r2.3ds', k => {
+          this.keycaps['SA R2'] = k
+        })
         loader.load('sa-1u-r3.3ds', k => {
           this.keycaps['SA R3'] = k
         })
-        loader.load('original.3ds', k => {
-          this.keycaps['original'] = k
+        loader.load('sa-1u-r4.3ds', k => {
+          this.keycaps['SA R4'] = k
         })
-        loader.load('cherry-1u-r1.3ds', k => {
-          this.keycaps['Cherry R1'] = k
+        loader.load('sa-7u-space.3ds', k => {
+          this.keycaps['SA SPACE'] = k
         })
       },
 
@@ -110,14 +122,14 @@
           var r = 0;
           var rx = 0;
           var ry = 0;
-          var p = 0;
+          var p = "Original";
 
           keylayout.forEach(function(row){
             if (Array.isArray(row)) {
               row.forEach(function(key){
                 if (typeof key == 'string') {
                   console.log('x:' + x + ' y:' + y + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + r + ' key: ' + key);
-                  var kc = that.keycaps['original'].clone(true);
+                  var kc = that.keycaps[p].clone(true);
                   kc.position.x = (rx + Math.cos(r) * x - Math.sin(r) * y) * 19 - 190;
                   kc.position.z = (ry + Math.sin(r) * x + Math.cos(r) * y) * 19 - 95;
                   kc.scale.x = w * 19 / 18.5 - 1 / 18.5 ;
@@ -132,7 +144,7 @@
                   h = key.h ? key.h : 1;
                   x = key.x ? x + key.x : x;
                   y = key.y ? y + key.y : y;
-                  p = key.p ? key.p : "SA R3";
+                  p = key.p ? key.p : p;
                   if (key.r || key.rx || key.ry) {
                     r = key.r ? key.r / 180 * Math.PI : r;
                     rx = key.rx ? key.rx : rx;
