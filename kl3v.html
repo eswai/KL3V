@@ -5,7 +5,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/101/three.min.js"></script>
     <script src="js/OrbitControls.js"></script>
-    <script src="js/TDSLoader.js"></script>
+    <script src="js/STLLoader.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
   </head>
   <body>
@@ -59,24 +59,24 @@
 
       created: function() {
         console.log("Loading keycaps...")
-        const loader = new THREE.TDSLoader();
+        var loader = new THREE.STLLoader();
         loader.setPath('./keycaps/');
-        loader.load('original.3ds', k => {
+        loader.load('original.stl', k => {
           this.keycaps['Original'] = k
         })
-        loader.load('sa-1u-r1.3ds', k => {
+        loader.load('sa-1u-r1.stl', k => {
           this.keycaps['SA R1'] = k
         })
-        loader.load('sa-1u-r2.3ds', k => {
+        loader.load('sa-1u-r2.stl', k => {
           this.keycaps['SA R2'] = k
         })
-        loader.load('sa-1u-r3.3ds', k => {
+        loader.load('sa-1u-r3.stl', k => {
           this.keycaps['SA R3'] = k
         })
-        loader.load('sa-1u-r4.3ds', k => {
+        loader.load('sa-1u-r4.stl', k => {
           this.keycaps['SA R4'] = k
         })
-        loader.load('sa-7u-space.3ds', k => {
+        loader.load('sa-7u-space.stl', k => {
           this.keycaps['SA SPACE'] = k
         })
       },
@@ -128,13 +128,16 @@
           var rx = 0;
           var ry = 0;
           var p = "Original";
+          var c = 0x999999;
 
           keylayout.forEach(function(row){
             if (Array.isArray(row)) {
               row.forEach(function(key){
                 if (typeof key == 'string') {
                   console.log('x:' + x + ' y:' + y + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + r + ' key: ' + key);
-                  var kc = that.keycaps[p].clone(true);
+                  var geometry = that.keycaps[p];
+                  var material = new THREE.MeshStandardMaterial({color: c, metalness: 0.1, roughness: 0.2});;
+                  var kc = new THREE.Mesh( geometry, material );
                   kc.position.x = (rx + Math.cos(r) * x - Math.sin(r) * y) * 19 - 190;
                   kc.position.z = (ry + Math.sin(r) * x + Math.cos(r) * y) * 19 - 95;
                   kc.scale.x = w * 19 / 18.5 - 1 / 18.5 ;
@@ -149,7 +152,8 @@
                   h = key.h ? key.h : 1;
                   x = key.x ? x + key.x : x;
                   y = key.y ? y + key.y : y;
-                  p = key.p ? key.p : p;
+                  p = that.keycaps[key.p] ? key.p : p;
+                  c = key.c ? parseInt(key.c.replace('#', '0x')) : c;
                   if (key.r || key.rx || key.ry) {
                     r = key.r ? key.r / 180 * Math.PI : r;
                     rx = key.rx ? key.rx : rx;
