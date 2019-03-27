@@ -53,6 +53,8 @@
       el: '#app',
       data: {
         keycaps: {},
+        switch: '',
+        pcb: '',
         camera: "perspective",
         jsondata: "[[{\"x\":3.5,\"c\":\"#2840dd\",\"p\":\"SA R1\",\"a\":7},\"\",{\"x\":10.5},\"\"],[{\"y\":-0.875,\"x\":2.5},\"\",{\"x\":1},\"\",{\"x\":8.5},\"\",{\"x\":1},\"\"],[{\"y\":-0.875,\"x\":5.5},\"\",\"\",{\"x\":4.5},\"\",\"\"],[{\"y\":-0.875,\"w\":1.5},\"\",\"\",{\"x\":14.5},\"\",{\"w\":1.5},\"\"],[{\"y\":-0.375,\"x\":3.5,\"c\":\"#5c6cc3\",\"p\":\"SA R2\"},\"\",{\"x\":10.5},\"\"],[{\"y\":-0.875,\"x\":2.5},\"\",{\"x\":1},\"\",{\"x\":8.5},\"\",{\"x\":1},\"\"],[{\"y\":-0.875,\"x\":5.5},\"\",{\"p\":\"SA R3\",\"h\":1.5},\"\",{\"x\":4.5,\"h\":1.5},\"\",{\"p\":\"SA R2\"},\"\"],[{\"y\":-0.875,\"w\":1.5},\"\",\"\",{\"x\":14.5},\"\",{\"w\":1.5},\"\"],[{\"y\":-0.375,\"x\":3.5,\"c\":\"#4284c8\"},\"\",{\"x\":10.5},\"\"],[{\"y\":-0.875,\"x\":2.5,\"p\":\"SA R3\"},\"\",{\"x\":1},\"\",{\"x\":8.5},\"\",{\"x\":1},\"\"],[{\"y\":-0.875,\"x\":5.5},\"\",{\"x\":6.5},\"\"],[{\"y\":-0.875,\"w\":1.5},\"\",\"\",{\"x\":14.5},\"\",{\"w\":1.5},\"\"],[{\"y\":-0.625,\"x\":6.5,\"c\":\"#65b7ec\",\"h\":1.5},\"\",{\"x\":4.5,\"h\":1.5},\"\"],[{\"y\":-0.75,\"x\":3.5,\"p\":\"SA R4\"},\"\",{\"x\":10.5},\"\"],[{\"y\":-0.875,\"x\":2.5},\"\",{\"x\":1},\"\",{\"x\":8.5},\"\",{\"x\":1},\"\"],[{\"y\":-0.875,\"x\":5.5},\"\",{\"x\":6.5},\"\"],[{\"y\":-0.875,\"w\":1.5},\"\",\"\",{\"x\":14.5},\"\",{\"w\":1.5},\"\"],[{\"y\":-0.375,\"x\":3.5,\"c\":\"#81d7e2\",\"p\":\"SA R3\"},\"\",{\"x\":10.5},\"\"],[{\"y\":-0.875,\"x\":2.5},\"\",{\"x\":1},\"\",{\"x\":8.5},\"\",{\"x\":1},\"\"],[{\"y\":-0.75,\"x\":0.5},\"\",\"\",{\"x\":14.5},\"\",\"\"],[{\"r\":30,\"rx\":6.5,\"ry\":4.25,\"y\":-1,\"x\":1,\"c\":\"#4e4c4c\"},\"\",\"\"],[{\"h\":2},\"\",{\"h\":2},\"\",\"\"],[{\"x\":2},\"\"],[{\"r\":-30,\"rx\":13,\"y\":-1,\"x\":-3},\"\",\"\"],[{\"x\":-3},\"\",{\"h\":2},\"\",{\"h\":2},\"\"],[{\"x\":-3},\"\"]]"
       },
@@ -78,6 +80,12 @@
         })
         loader.load('sa-7u-space.stl', k => {
           this.keycaps['SA SPACE'] = k
+        })
+        loader.load('pcb.stl', k => {
+          this.pcb = k
+        })
+        loader.load('switch.stl', k => {
+          this.switch = k
         })
       },
 
@@ -115,7 +123,7 @@
           scene.add( pointLight );
 
           const plane = new THREE.GridHelper(1900, 100, 0x888888, 0x888888);
-          plane.position.y = 0;
+          plane.position.y = -20;
           scene.add(plane);
 
           const keylayout = JSON.parse(this.jsondata)
@@ -135,15 +143,48 @@
               row.forEach(function(key){
                 if (typeof key == 'string') {
                   console.log('x:' + x + ' y:' + y + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + r + ' key: ' + key);
+
+                  px = (rx + Math.cos(r) * x - Math.sin(r) * y) * 19 - 190;
+                  pz = (ry + Math.sin(r) * x + Math.cos(r) * y) * 19 - 95;
+                  sx = w * 19 / 18.5 - 1 / 18.5 ;
+                  sz = h * 19 / 18.5 - 1 / 18.5;
+
                   var geometry = that.keycaps[p];
                   var material = new THREE.MeshStandardMaterial({color: c, metalness: 0.1, roughness: 0.2});;
                   var kc = new THREE.Mesh( geometry, material );
-                  kc.position.x = (rx + Math.cos(r) * x - Math.sin(r) * y) * 19 - 190;
-                  kc.position.z = (ry + Math.sin(r) * x + Math.cos(r) * y) * 19 - 95;
-                  kc.scale.x = w * 19 / 18.5 - 1 / 18.5 ;
-                  kc.scale.z = h * 19 / 18.5 - 1 / 18.5;
+                  kc.position.x = px;
+                  kc.position.z = pz;
+                  kc.scale.x = sx;
+                  kc.scale.z = sz;
                   kc.rotation.y = -r;
                   scene.add(kc);
+
+                  var material = new THREE.MeshStandardMaterial({color: 0xf0ffff, metalness: 0.5, roughness: 0.5});;
+                  var pcb1 = new THREE.Mesh( that.pcb, material );
+                  pcb1.position.x = px;
+                  pcb1.position.y = -7
+                  pcb1.position.z = pz;
+                  pcb1.scale.x = sx;
+                  pcb1.scale.z = sz;
+                  pcb1.rotation.y = -r;
+                  scene.add(pcb1);
+
+                  var pcb2 = pcb1.clone()
+                  pcb2.position.y = -12
+                  scene.add(pcb2);
+
+                  var pcb3 = pcb1.clone()
+                  pcb3.position.y = -16
+                  scene.add(pcb3);
+
+                  var material = new THREE.MeshStandardMaterial({color: 0x111111, metalness: 0.5, roughness: 0.7});;
+                  var sw = new THREE.Mesh( that.switch, material );
+                  sw.position.x = (rx + Math.cos(r) * (x + (w - 1) / 2) - Math.sin(r) * (y + (h - 1) / 2)) * 19 - 190;
+                  sw.position.y = -5
+                  sw.position.z = (ry + Math.sin(r) * (x + (w - 1) / 2) + Math.cos(r) * (y + (h - 1) / 2)) * 19 - 95;
+                  sw.rotation.y = -r;
+                  scene.add(sw);
+
                   x += w;
                   w = 1;
                   h = 1;
