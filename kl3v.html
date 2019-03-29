@@ -128,13 +128,15 @@
 
           const keylayout = JSON.parse(this.jsondata)
 
-          var x = 0;
-          var y = 0;
+          var ax = 0;
+          var ay = 0;
           var w = 1;
           var h = 1;
           var r = 0;
           var rx = 0;
           var ry = 0;
+          var dx = 0;
+          var dy = 0;
           var p = "Original";
           var c = 0x999999;
 
@@ -142,12 +144,12 @@
             if (Array.isArray(row)) {
               row.forEach(function(key){
                 if (typeof key == 'string') {
-                  console.log('x:' + x + ' y:' + y + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + r + ' key: ' + key);
+                  console.log('x:' + ax + ' y:' + ay + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + r + ' key: ' + key);
 
-                  px = (rx + Math.cos(r) * x - Math.sin(r) * y) * 19 - 190;
-                  pz = (ry + Math.sin(r) * x + Math.cos(r) * y) * 19 - 95;
-                  sx = w * 19 / 18.5 - 1 / 18.5 ;
-                  sz = h * 19 / 18.5 - 1 / 18.5;
+                  var px = (rx + Math.cos(r) * ax - Math.sin(r) * ay) * 19 - 190;
+                  var pz = (ry + Math.sin(r) * ax + Math.cos(r) * ay) * 19 - 95;
+                  var sx = w * 19 / 18.5 - 1 / 18.5;
+                  var sz = h * 19 / 18.5 - 1 / 18.5;
 
                   var geometry = that.keycaps[p];
                   var material = new THREE.MeshStandardMaterial({color: c, metalness: 0.1, roughness: 0.2});;
@@ -179,35 +181,43 @@
 
                   var material = new THREE.MeshStandardMaterial({color: 0x111111, metalness: 0.5, roughness: 0.7});;
                   var sw = new THREE.Mesh( that.switch, material );
-                  sw.position.x = (rx + Math.cos(r) * (x + (w - 1) / 2) - Math.sin(r) * (y + (h - 1) / 2)) * 19 - 190;
+                  sw.position.x = (rx + Math.cos(r) * (ax + (w - 1) / 2) - Math.sin(r) * (ay + (h - 1) / 2)) * 19 - 190;
                   sw.position.y = -5
-                  sw.position.z = (ry + Math.sin(r) * (x + (w - 1) / 2) + Math.cos(r) * (y + (h - 1) / 2)) * 19 - 95;
+                  sw.position.z = (ry + Math.sin(r) * (ax + (w - 1) / 2) + Math.cos(r) * (ay + (h - 1) / 2)) * 19 - 95;
                   sw.rotation.y = -r;
                   scene.add(sw);
 
-                  x += w;
+                  ax = ax + w;
                   w = 1;
                   h = 1;
                 } else {
-                  w = key.w ? key.w : 1;
-                  h = key.h ? key.h : 1;
-                  x = key.x ? x + key.x : x;
-                  y = key.y ? y + key.y : y;
+                  if (key.w) w = key.w
+                  if (key.h) h = key.h
+                  if (key.rx) {
+                    rx = key.rx
+                    ax = 0
+                    ay = 0
+                  }
+                  if (key.ry) {
+                    ry = key.ry
+                    ax = 0
+                    ay = 0
+                  }
+                  if (key.x) {
+                    dx = key.x
+                    ax = ax + dx
+                  }
+                  if (key.y) {
+                    dy = key.y
+                    ay = ay + dy
+                  }
                   p = that.keycaps[key.p] ? key.p : p;
                   c = key.c ? parseInt(key.c.replace('#', '0x')) : c;
-                  if (key.r || key.rx || key.ry) {
-                    r = key.r ? key.r / 180 * Math.PI : r;
-                    rx = key.rx ? key.rx : rx;
-                    ry = key.ry ? key.ry : ry;
-                    x = key.x ? key.x : 0;
-                    y = key.y ? key.y : 0;
-                  };
+                  r = key.r ? key.r / 180 * Math.PI : r;
                 }
               });
-              x = 0;
-              y += 1;
-              w = 1;
-              h = 1;
+              ax = 0;
+              ay++
             }
           });
 
