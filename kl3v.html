@@ -6,6 +6,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/101/three.min.js"></script>
     <script src="js/OrbitControls.js"></script>
     <script src="js/STLLoader.js"></script>
+    <script src="js/KLEparser.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
   </head>
   <body>
@@ -61,8 +62,8 @@
 
       created: function() {
         console.log("Loading keycaps...")
-        var loader = new THREE.STLLoader();
-        loader.setPath('./keycaps/');
+        var loader = new THREE.STLLoader()
+        loader.setPath('./models/')
         loader.load('original.stl', k => {
           this.keycaps['Original'] = k
         })
@@ -84,7 +85,7 @@
         loader.load('pcb.stl', k => {
           this.pcb = k
         })
-        loader.load('switch.stl', k => {
+        loader.load('mx-switch.stl', k => {
           this.switch = k
         })
       },
@@ -92,140 +93,89 @@
       methods: {
         renderKB: function() {
           var that = this
-          const width = 960;
-          const height = 540;
+          const width = 960
+          const height = 540
 
-          var container = document.getElementById( 'container' );
-          container.innerHTML = "";
+          var container = document.getElementById( 'container' )
+          container.innerHTML = ""
 
-          var renderer = new THREE.WebGLRenderer( { antialias: true } );
-          renderer.setPixelRatio( window.devicePixelRatio );
-          renderer.setSize( width, height );
-          renderer.gammaOutput = true;
-          renderer.gammaFactor = 2.2;
+          var renderer = new THREE.WebGLRenderer( { antialias: true } )
+          renderer.setPixelRatio( window.devicePixelRatio )
+          renderer.setSize( width, height )
+          renderer.gammaOutput = true
+          renderer.gammaFactor = 2.2
 
-          container.appendChild( renderer.domElement );
-          scene = new THREE.Scene();
-          scene.background = new THREE.Color( 0xf9f9f9 );
+          container.appendChild( renderer.domElement )
+          scene = new THREE.Scene()
+          scene.background = new THREE.Color( 0xf9f9f9 )
           if (this.camera == "perspective") {
-            var camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 );
+            var camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 )
           } else {
-            var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 2000 );
+            var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 2000 )
           }
-          camera.position.set( 0, 1000, 0 );
+          camera.position.set( 0, 1000, 0 )
 
-          controls = new THREE.OrbitControls( camera, renderer.domElement );
-          controls.target.set( 0, 0.5, 0 );
+          controls = new THREE.OrbitControls( camera, renderer.domElement )
+          controls.target.set( 0, 0.5, 0 )
 
-          scene.add( new THREE.AmbientLight( 0x404040 ) );
-          pointLight = new THREE.PointLight( 0xffffff, 1 );
-          pointLight.position.set( -1000, 700, -1000 );
-          scene.add( pointLight );
+          scene.add( new THREE.AmbientLight( 0x404040 ) )
+          pointLight = new THREE.PointLight( 0xffffff, 1 )
+          pointLight.position.set( -1000, 700, -1000 )
+          scene.add( pointLight )
 
-          const plane = new THREE.GridHelper(1900, 100, 0x888888, 0x888888);
-          plane.position.y = -20;
-          scene.add(plane);
+          const plane = new THREE.GridHelper(1900, 100, 0x888888, 0x888888)
+          plane.position.y = -20
+          scene.add(plane)
 
-          const keylayout = JSON.parse(this.jsondata)
+          var keys = KLEparser(that.jsondata)
+          keys.forEach(function(key){
+            var sx = key.w * 19 / 18.5 - 1 / 18.5
+            var sz = key.h * 19 / 18.5 - 1 / 18.5
 
-          var ax = 0;
-          var ay = 0;
-          var w = 1;
-          var h = 1;
-          var r = 0;
-          var rx = 0;
-          var ry = 0;
-          var dx = 0;
-          var dy = 0;
-          var p = "Original";
-          var c = 0x999999;
+            var geometry = that.keycaps[key.p]
+            var material = new THREE.MeshStandardMaterial({color: key.c, metalness: 0.1, roughness: 0.2})
+            var kc = new THREE.Mesh( geometry, material )
+            kc.position.x = key.centerX() * 19
+            kc.position.z = key.centerY() * 19
+            kc.scale.x = sx
+            kc.scale.z = sz
+            kc.rotation.y = -key.r
+            scene.add(kc)
 
-          keylayout.forEach(function(row){
-            if (Array.isArray(row)) {
-              row.forEach(function(key){
-                if (typeof key == 'string') {
-                  console.log('x:' + ax + ' y:' + ay + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + r + ' key: ' + key);
+            var material = new THREE.MeshStandardMaterial({color: 0xf0ffff, metalness: 0.5, roughness: 0.5})
+            var pcb1 = new THREE.Mesh( that.pcb, material )
+            var sx = key.w * 19 / 23 + 4 / 23
+            var sz = key.h * 19 / 23 + 4 / 23
+            pcb1.position.x = key.centerX() * 19
+            pcb1.position.y = -7
+            pcb1.position.z = key.centerY() * 19
+            pcb1.scale.x = sx
+            pcb1.scale.z = sz
+            pcb1.rotation.y = -key.r
+            scene.add(pcb1)
 
-                  var px = (rx + Math.cos(r) * ax - Math.sin(r) * ay) * 19 - 190;
-                  var pz = (ry + Math.sin(r) * ax + Math.cos(r) * ay) * 19 - 95;
-                  var sx = w * 19 / 18.5 - 1 / 18.5;
-                  var sz = h * 19 / 18.5 - 1 / 18.5;
+            var pcb2 = pcb1.clone()
+            pcb2.position.y = -12
+            scene.add(pcb2)
 
-                  var geometry = that.keycaps[p];
-                  var material = new THREE.MeshStandardMaterial({color: c, metalness: 0.1, roughness: 0.2});;
-                  var kc = new THREE.Mesh( geometry, material );
-                  kc.position.x = px;
-                  kc.position.z = pz;
-                  kc.scale.x = sx;
-                  kc.scale.z = sz;
-                  kc.rotation.y = -r;
-                  scene.add(kc);
+            var pcb3 = pcb1.clone()
+            pcb3.position.y = -16
+            scene.add(pcb3)
 
-                  var material = new THREE.MeshStandardMaterial({color: 0xf0ffff, metalness: 0.5, roughness: 0.5});;
-                  var pcb1 = new THREE.Mesh( that.pcb, material );
-                  pcb1.position.x = px;
-                  pcb1.position.y = -7
-                  pcb1.position.z = pz;
-                  pcb1.scale.x = sx;
-                  pcb1.scale.z = sz;
-                  pcb1.rotation.y = -r;
-                  scene.add(pcb1);
+            var material = new THREE.MeshStandardMaterial({color: 0x111111, metalness: 0.5, roughness: 0.7})
+            var sw = new THREE.Mesh( that.switch, material )
+            sw.position.x = key.centerX() * 19
+            sw.position.y = -5
+            sw.position.z = key.centerY() * 19
+            sw.rotation.y = -key.r
+            scene.add(sw)
+          })
 
-                  var pcb2 = pcb1.clone()
-                  pcb2.position.y = -12
-                  scene.add(pcb2);
-
-                  var pcb3 = pcb1.clone()
-                  pcb3.position.y = -16
-                  scene.add(pcb3);
-
-                  var material = new THREE.MeshStandardMaterial({color: 0x111111, metalness: 0.5, roughness: 0.7});;
-                  var sw = new THREE.Mesh( that.switch, material );
-                  sw.position.x = (rx + Math.cos(r) * (ax + (w - 1) / 2) - Math.sin(r) * (ay + (h - 1) / 2)) * 19 - 190;
-                  sw.position.y = -5
-                  sw.position.z = (ry + Math.sin(r) * (ax + (w - 1) / 2) + Math.cos(r) * (ay + (h - 1) / 2)) * 19 - 95;
-                  sw.rotation.y = -r;
-                  scene.add(sw);
-
-                  ax = ax + w;
-                  w = 1;
-                  h = 1;
-                } else {
-                  if (key.w) w = key.w
-                  if (key.h) h = key.h
-                  if (key.rx) {
-                    rx = key.rx
-                    ax = 0
-                    ay = 0
-                  }
-                  if (key.ry) {
-                    ry = key.ry
-                    ax = 0
-                    ay = 0
-                  }
-                  if (key.x) {
-                    dx = key.x
-                    ax = ax + dx
-                  }
-                  if (key.y) {
-                    dy = key.y
-                    ay = ay + dy
-                  }
-                  p = that.keycaps[key.p] ? key.p : p;
-                  c = key.c ? parseInt(key.c.replace('#', '0x')) : c;
-                  r = key.r ? key.r / 180 * Math.PI : r;
-                }
-              });
-              ax = 0;
-              ay++
-            }
-          });
-
-          tick();
+          tick()
 
           function tick() {
-            renderer.render(scene, camera);
-            requestAnimationFrame(tick);
+            renderer.render(scene, camera)
+            requestAnimationFrame(tick)
           }
         }
       }
