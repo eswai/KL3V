@@ -38,6 +38,18 @@
           <div id="container"></div>
         </div>
       </section>
+      <article class="message">
+        <div class="message-body">
+          <div class="content">
+            <p>Supported keycaps</p>
+            <ul>
+              <li>SA R1, R2, R3, R4, SPACE</li>
+              <li>DSA</li>
+              <li>XDA</li>
+            </ul>
+          </div>
+        </div>
+      </article>
       <footer class="footer">
         <div class="content has-text-centered">
           <p>
@@ -64,8 +76,11 @@
         console.log("Loading keycaps...")
         var loader = new THREE.STLLoader()
         loader.setPath('./models/')
-        loader.load('original.stl', k => {
-          this.keycaps['Original'] = k
+        loader.load('dsa.stl', k => {
+          this.keycaps['DSA'] = k
+        })
+        loader.load('xda.stl', k => {
+          this.keycaps['XDA'] = k
         })
         loader.load('sa-1u-r1.stl', k => {
           this.keycaps['SA R1'] = k
@@ -142,7 +157,7 @@
             kc.rotation.y = -key.r
             scene.add(kc)
 
-            var material = new THREE.MeshStandardMaterial({color: 0xf0ffff, metalness: 0.5, roughness: 0.5})
+            var material = new THREE.MeshStandardMaterial({color: 0xf0ffff, metalness: 0.1, roughness: 0.5})
             var pcb1 = new THREE.Mesh( that.pcb, material )
             var sx = key.w * 19 / 23 + 4 / 23
             var sz = key.h * 19 / 23 + 4 / 23

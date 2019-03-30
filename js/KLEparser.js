@@ -38,8 +38,8 @@ function KLEparser(jsondata) {
   var ry = 0
   var dx = 0
   var dy = 0
-  var p = "Original"
-  var c = 0x999999
+  var p = "DSA"
+  var c = 0xffffff
   var keys = []
 
   layout.forEach(function(row){
