@@ -41,6 +41,7 @@ function KLEparser(jsondata) {
   var p = "DSA"
   var c = 0xffffff
   var keys = []
+  var keyboard = {keys: keys}
 
   layout.forEach(function(row){
     if (Array.isArray(row)) {
@@ -84,8 +85,15 @@ function KLEparser(jsondata) {
       })
       ax = 0
       ay++
+    } else {
+      bg = row.backcolor
+      if (bg) row.backcolor = parseInt(bg.replace('#', '0x'))
+      keyboard.properties = row
     }
   })
 
-  return keys
+  if (!keyboard.properties) {
+    keyboard.properties = {backcolor: 0xffffff}
+  }
+  return keyboard
 }
