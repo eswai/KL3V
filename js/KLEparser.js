@@ -24,6 +24,14 @@ class Key {
   cornerY() {
     return this.y
   }
+
+  scaleW() {
+    return this.w * 19 / 18.5 - 1 / 18.5
+  }
+
+  scaleH() {
+    return this.h * 19 / 18.5 - 1 / 18.5
+  }
 }
 
 function KLEparser(jsondata) {

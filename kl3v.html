@@ -75,35 +75,29 @@
       },
 
       created: function() {
+        var that = this
         console.log("Loading keycaps...")
         var loader = new THREE.STLLoader()
         loader.setPath('./models/')
-        loader.load('dsa.stl', k => {
-          this.keycaps['DSA'] = k
+        this.keycaps = {
+          'DSA': 'dsa.stl',
+          'XDA': 'xda.stl',
+          'SA R1': 'sa-1u-r1.stl',
+          'SA R2': 'sa-1u-r2.stl',
+          'SA R3': 'sa-1u-r3.stl',
+          'SA R4': 'sa-1u-r4.stl',
+          'SA SPACE': 'sa-7u-space.stl'
+        }
+        Object.keys(that.keycaps).forEach(kn => {
+          loader.load(that.keycaps[kn], stl => {
+            this.keycaps[kn] = stl
+          })
         })
-        loader.load('xda.stl', k => {
-          this.keycaps['XDA'] = k
+        loader.load('pcb.stl', stl => {
+          this.pcb = stl
         })
-        loader.load('sa-1u-r1.stl', k => {
-          this.keycaps['SA R1'] = k
-        })
-        loader.load('sa-1u-r2.stl', k => {
-          this.keycaps['SA R2'] = k
-        })
-        loader.load('sa-1u-r3.stl', k => {
-          this.keycaps['SA R3'] = k
-        })
-        loader.load('sa-1u-r4.stl', k => {
-          this.keycaps['SA R4'] = k
-        })
-        loader.load('sa-7u-space.stl', k => {
-          this.keycaps['SA SPACE'] = k
-        })
-        loader.load('pcb.stl', k => {
-          this.pcb = k
-        })
-        loader.load('mx-switch.stl', k => {
-          this.switch = k
+        loader.load('mx-switch.stl', stl => {
+          this.switch = stl
         })
       },
 
@@ -147,16 +141,16 @@
 
           var kb = KLEparser(that.jsondata)
           kb.keys.forEach(function(key){
-            var sx = key.w * 19 / 18.5 - 1 / 18.5
-            var sz = key.h * 19 / 18.5 - 1 / 18.5
-
             var geometry = that.keycaps[key.p]
+            if (!geometry) {
+              geometry = that.keycaps["DSA"]
+            }
             var material = new THREE.MeshStandardMaterial({color: key.c, metalness: 0.1, roughness: 0.2})
             var kc = new THREE.Mesh( geometry, material )
             kc.position.x = key.centerX() * 19
             kc.position.z = key.centerY() * 19
-            kc.scale.x = sx
-            kc.scale.z = sz
+            kc.scale.x = key.scaleW()
+            kc.scale.z = key.scaleH()
             kc.rotation.y = -key.r
             scene.add(kc)
 
