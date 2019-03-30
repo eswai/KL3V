@@ -58,29 +58,29 @@ function KLEparser(jsondata) {
           w = 1
           h = 1
         } else {
-          if (key.w) w = key.w
-          if (key.h) h = key.h
-          if (key.rx) {
+          if ("w" in key) w = key.w
+          if ("h" in key) h = key.h
+          if ("rx" in key) {
             rx = key.rx
             ax = 0
             ay = 0
           }
-          if (key.ry) {
+          if ("ry" in key) {
             ry = key.ry
             ax = 0
             ay = 0
           }
-          if (key.x) {
+          if ("x" in key) {
             dx = key.x
             ax = ax + dx
           }
-          if (key.y) {
+          if ("y" in key) {
             dy = key.y
             ay = ay + dy
           }
           p = key.p ? key.p : p
           c = key.c ? parseInt(key.c.replace('#', '0x')) : c
-          r = key.r ? key.r / 180 * Math.PI : r
+          r = "r" in key ? key.r / 180 * Math.PI : r
         }
       })
       ax = 0
