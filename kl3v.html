@@ -94,11 +94,11 @@
         scene: false,
         cameraobj: false,
         tobj: [],
+        rid: -1,
         rawdata: "[{x:3.5,c:\"#2840dd\",p:\"SA R1\",a:7},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",\"\",{x:4.5},\"\",\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#5c6cc3\",p:\"SA R2\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{p:\"SA R3\",h:1.5},\"\",{x:4.5,h:1.5},\"\",{p:\"SA R2\"},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#4284c8\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5,p:\"SA R3\"},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{x:6.5},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.625,x:6.5,c:\"#65b7ec\",h:1.5},\"\",{x:4.5,h:1.5},\"\"],[{y:-0.75,x:3.5,p:\"SA R4\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{x:6.5},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#81d7e2\",p:\"XDA\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.75,x:0.5},\"\",\"\",{x:14.5},\"\",\"\"],[{r:30,rx:6.5,ry:4.25,y:-1,x:1,c:\"#4e4c4c\",p:\"DSA\"},\"\",\"\"],[{h:2},\"\",{h:2},\"\",\"\"],[{x:2},\"\"],[{r:-30,rx:13,y:-1,x:-3,c:\"#483527\",p:\"Choc\"},\"\",\"\"],[{x:-3},\"\",{h:2},\"\",{h:2},\"\"],[{x:-3},\"\"]"
       },
 
       created: function() {
-        var that = this
         console.log("Loading keycaps...")
         var loader = new THREE.STLLoader()
         loader.setPath('./models/')
@@ -112,8 +112,8 @@
           'SA SPACE': 'sa-7u-space.stl',
           'Choc': 'choc.stl'
         }
-        Object.keys(that.keycaps).forEach(kn => {
-          loader.load(that.keycaps[kn], stl => {
+        Object.keys(this.keycaps).forEach(kn => {
+          loader.load(this.keycaps[kn], stl => {
             this.keycaps[kn] = stl
           })
         })
@@ -135,14 +135,18 @@
           const height = 540
 
           var container = document.getElementById( 'container' )
+          var renderer = that.renderer
+          var scene = that.scene
+          var camera = that.cameraobj
 
-          while (that.tobj.length > 0) {
-            that.scene.remove(that.tobj.shift())
+          if (that.rid >= 0) {
+            cancelAnimationFrame(that.rid)
           }
-          var renderer
-          var camera
-          var controls
-          if (that.renderer == false) {
+          while (that.tobj.length > 0) {
+            scene.remove(that.tobj.shift())
+          }
+
+          if (renderer == false) {
             renderer = new THREE.WebGLRenderer( { antialias: true } )
             that.renderer = renderer
             renderer.setPixelRatio( window.devicePixelRatio )
@@ -151,9 +155,6 @@
             renderer.gammaFactor = 2.2
 
             container.appendChild( renderer.domElement )
-            scene = new THREE.Scene()
-            that.scene = scene
-            scene.background = new THREE.Color( 0xf0f0f0 )
             if (this.camera == "perspective") {
               camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 )
             } else {
@@ -166,6 +167,10 @@
             controls.target.set( 0, 0.5, 0 )
             // controls.object.position.set( 200, 500, 100 )
 
+            scene = new THREE.Scene()
+            that.scene = scene
+            scene.background = new THREE.Color( 0xf0f0f0 )
+
             scene.add( new THREE.AmbientLight( 0x404040 ) )
             pointLight = new THREE.PointLight( 0xffffff, 1 )
             pointLight.position.set( 0, 2000, 800 )
@@ -174,10 +179,6 @@
             const plane = new THREE.GridHelper(1900, 100, 0x888888, 0x888888)
             plane.position.y = -20
             scene.add(plane)
-          } else {
-            renderer = that.renderer
-            scene = that.scene
-            camera = that.cameraobj
           }
 
           var kb = KLEparser(that.rawdata)
@@ -238,7 +239,7 @@
 
           function tick() {
             renderer.render(scene, camera)
-            requestAnimationFrame(tick)
+            that.rid = requestAnimationFrame(tick)
           }
         }
       }
