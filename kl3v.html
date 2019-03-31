@@ -90,7 +90,10 @@
         pcbcolor: '#EEEEEE',
         colors: ['#EEEEEE', '#6A0888', '#B40404', '#151515', '#088A08', '#08298A', "#AEB404"],
         camera: "perspective",
-        // jsonurl: "",
+        renderer: false,
+        scene: false,
+        cameraobj: false,
+        tobj: [],
         rawdata: "[{x:3.5,c:\"#2840dd\",p:\"SA R1\",a:7},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",\"\",{x:4.5},\"\",\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#5c6cc3\",p:\"SA R2\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{p:\"SA R3\",h:1.5},\"\",{x:4.5,h:1.5},\"\",{p:\"SA R2\"},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#4284c8\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5,p:\"SA R3\"},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{x:6.5},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.625,x:6.5,c:\"#65b7ec\",h:1.5},\"\",{x:4.5,h:1.5},\"\"],[{y:-0.75,x:3.5,p:\"SA R4\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{x:6.5},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#81d7e2\",p:\"XDA\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.75,x:0.5},\"\",\"\",{x:14.5},\"\",\"\"],[{r:30,rx:6.5,ry:4.25,y:-1,x:1,c:\"#4e4c4c\",p:\"DSA\"},\"\",\"\"],[{h:2},\"\",{h:2},\"\",\"\"],[{x:2},\"\"],[{r:-30,rx:13,y:-1,x:-3,c:\"#483527\",p:\"Choc\"},\"\",\"\"],[{x:-3},\"\",{h:2},\"\",{h:2},\"\"],[{x:-3},\"\"]"
       },
 
@@ -126,42 +129,56 @@
       },
 
       methods: {
-        renderKB: async function() {
+        renderKB: function() {
           var that = this
           const width = 960
           const height = 540
 
           var container = document.getElementById( 'container' )
-          container.innerHTML = ""
 
-          var renderer = new THREE.WebGLRenderer( { antialias: true } )
-          renderer.setPixelRatio( window.devicePixelRatio )
-          renderer.setSize( width, height )
-          renderer.gammaOutput = true
-          renderer.gammaFactor = 2.2
-
-          container.appendChild( renderer.domElement )
-          scene = new THREE.Scene()
-          scene.background = new THREE.Color( 0xf0f0f0 )
-          if (this.camera == "perspective") {
-            var camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 )
-          } else {
-            var camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 2000 )
+          while (that.tobj.length > 0) {
+            that.scene.remove(that.tobj.shift())
           }
-          camera.position.set( 0, 600, 0 )
+          var renderer
+          var camera
+          var controls
+          if (that.renderer == false) {
+            renderer = new THREE.WebGLRenderer( { antialias: true } )
+            that.renderer = renderer
+            renderer.setPixelRatio( window.devicePixelRatio )
+            renderer.setSize( width, height )
+            renderer.gammaOutput = true
+            renderer.gammaFactor = 2.2
 
-          controls = new THREE.OrbitControls( camera, renderer.domElement )
-          controls.target.set( 0, 0.5, 0 )
-          // controls.object.position.set( 200, 500, 100 )
+            container.appendChild( renderer.domElement )
+            scene = new THREE.Scene()
+            that.scene = scene
+            scene.background = new THREE.Color( 0xf0f0f0 )
+            if (this.camera == "perspective") {
+              camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 )
+            } else {
+              camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 2000 )
+            }
+            that.cameraobj = camera
+            camera.position.set( 0, 600, 0 )
 
-          scene.add( new THREE.AmbientLight( 0x404040 ) )
-          pointLight = new THREE.PointLight( 0xffffff, 1 )
-          pointLight.position.set( 0, 2000, 800 )
-          scene.add( pointLight )
+            controls = new THREE.OrbitControls( camera, renderer.domElement )
+            controls.target.set( 0, 0.5, 0 )
+            // controls.object.position.set( 200, 500, 100 )
 
-          const plane = new THREE.GridHelper(1900, 100, 0x888888, 0x888888)
-          plane.position.y = -20
-          scene.add(plane)
+            scene.add( new THREE.AmbientLight( 0x404040 ) )
+            pointLight = new THREE.PointLight( 0xffffff, 1 )
+            pointLight.position.set( 0, 2000, 800 )
+            scene.add( pointLight )
+
+            const plane = new THREE.GridHelper(1900, 100, 0x888888, 0x888888)
+            plane.position.y = -20
+            scene.add(plane)
+          } else {
+            renderer = that.renderer
+            scene = that.scene
+            camera = that.cameraobj
+          }
 
           var kb = KLEparser(that.rawdata)
           kb.keys.forEach(function(key){
@@ -177,6 +194,7 @@
             kc.scale.z = key.scaleH()
             kc.rotation.y = -key.r
             scene.add(kc)
+            that.tobj.push(kc)
 
             var material = new THREE.MeshStandardMaterial({color: that.pcbcolor, metalness: 0.1, roughness: 0.5})
             var pcb1 = new THREE.Mesh( that.pcb, material )
@@ -189,14 +207,17 @@
             pcb1.scale.z = sz
             pcb1.rotation.y = -key.r
             scene.add(pcb1)
+            that.tobj.push(pcb1)
 
             var pcb2 = pcb1.clone()
             pcb2.position.y = -12
             scene.add(pcb2)
+            that.tobj.push(pcb2)
 
             var pcb3 = pcb1.clone()
             pcb3.position.y = -16
             scene.add(pcb3)
+            that.tobj.push(pcb3)
 
             var material = new THREE.MeshStandardMaterial({color: 0x111111, metalness: 0.5, roughness: 0.7})
             var sw
@@ -210,6 +231,7 @@
             sw.position.z = key.centerY() * 19
             sw.rotation.y = -key.r
             scene.add(sw)
+            that.tobj.push(sw)
           })
 
           tick()
