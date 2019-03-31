@@ -7,7 +7,9 @@
     <script src="js/OrbitControls.js"></script>
     <script src="js/STLLoader.js"></script>
     <script src="js/KLEparser.js"></script>
+    <script src="https://unpkg.com/vue-swatches"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/vue-swatches/dist/vue-swatches.min.css">
   </head>
   <body>
     <div class="container">
@@ -20,7 +22,17 @@
               <textarea v-model="rawdata" placeholder="JSON data" class="textarea"></textarea>
             </div>
           </div>
+
           <div class="field is-grouped">
+            <div class="field is-horizontal">
+              <div class="label">
+                PCB color
+              </div>
+              <div class="control">
+                <swatches v-model="pcbcolor" :colors="colors" shapes="circles"  inline popover-to="left"></swatches>
+              </div>
+            </div>
+
             <div class="control">
               <label class="radio">
                 <input type="radio" value="perspective" v-model="camera">
@@ -31,9 +43,11 @@
                 Orthographic camera
               </label>
             </div>
+
             <div class="control">
               <button id="renderBtn" v-on:click="renderKB" class="button is-dark">Render</button>
             </div>
+            
           </div>
           <div id="container"></div>
         </div>
@@ -67,11 +81,14 @@
   <script type="text/javascript">
     var app = new Vue({
       el: '#app',
+      components: {Swatches: window.VueSwatches.default},
       data: {
         keycaps: {},
         mxswitch: '',
         chocswitch: '',
         pcb: '',
+        pcbcolor: '#EEEEEE',
+        colors: ['#EEEEEE', '#6A0888', '#B40404', '#151515', '#088A08', '#08298A', "#AEB404"],
         camera: "perspective",
         // jsonurl: "",
         rawdata: "[{x:3.5,c:\"#2840dd\",p:\"SA R1\",a:7},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",\"\",{x:4.5},\"\",\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#5c6cc3\",p:\"SA R2\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{p:\"SA R3\",h:1.5},\"\",{x:4.5,h:1.5},\"\",{p:\"SA R2\"},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#4284c8\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5,p:\"SA R3\"},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{x:6.5},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.625,x:6.5,c:\"#65b7ec\",h:1.5},\"\",{x:4.5,h:1.5},\"\"],[{y:-0.75,x:3.5,p:\"SA R4\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{x:6.5},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#81d7e2\",p:\"XDA\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.75,x:0.5},\"\",\"\",{x:14.5},\"\",\"\"],[{r:30,rx:6.5,ry:4.25,y:-1,x:1,c:\"#4e4c4c\",p:\"DSA\"},\"\",\"\"],[{h:2},\"\",{h:2},\"\",\"\"],[{x:2},\"\"],[{r:-30,rx:13,y:-1,x:-3,c:\"#483527\",p:\"Choc\"},\"\",\"\"],[{x:-3},\"\",{h:2},\"\",{h:2},\"\"],[{x:-3},\"\"]"
@@ -161,7 +178,7 @@
             kc.rotation.y = -key.r
             scene.add(kc)
 
-            var material = new THREE.MeshStandardMaterial({color: 0xeeeeee, metalness: 0.1, roughness: 0.5})
+            var material = new THREE.MeshStandardMaterial({color: that.pcbcolor, metalness: 0.1, roughness: 0.5})
             var pcb1 = new THREE.Mesh( that.pcb, material )
             var sx = key.w * 19 / 23 + 4 / 23
             var sz = key.h * 19 / 23 + 4 / 23
