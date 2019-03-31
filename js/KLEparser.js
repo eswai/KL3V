@@ -34,8 +34,10 @@ class Key {
   }
 }
 
-function KLEparser(jsondata) {
-  var layout = JSON.parse(jsondata)
+function KLEparser(raw) {
+  json = raw2json(raw)
+  console.log(json)
+  var layout = JSON.parse(json)
 
   var ax = 0
   var ay = 0
@@ -47,7 +49,7 @@ function KLEparser(jsondata) {
   var dx = 0
   var dy = 0
   var p = "DSA"
-  var c = 0xffffff
+  var c = 0xcfd8dc
   var keys = []
   var keyboard = {keys: keys}
 
@@ -55,8 +57,6 @@ function KLEparser(jsondata) {
     if (Array.isArray(row)) {
       row.forEach(function(key){
         if (typeof key == 'string') {
-          console.log('x:' + ax + ' y:' + ay + ' rx: ' + rx + ' ry: ' + ry + ' r: ' + r + ' key: ' + key)
-
           var px = (rx + Math.cos(r) * ax - Math.sin(r) * ay)
           var py = (ry + Math.sin(r) * ax + Math.cos(r) * ay)
 
@@ -93,15 +93,22 @@ function KLEparser(jsondata) {
       })
       ax = 0
       ay++
-    } else {
-      bg = row.backcolor
-      if (bg) row.backcolor = parseInt(bg.replace('#', '0x'))
-      keyboard.properties = row
     }
   })
 
-  if (!keyboard.properties) {
-    keyboard.properties = {backcolor: 0xffffff}
-  }
   return keyboard
+}
+
+function raw2json(rawdata) {
+  return "[" + rawdata
+  .replace(/(\\\\)|(\\\")|(\\n)/g, "")
+  .split(",")
+  .map(function(str) {
+    if (str.match(/^\"/)) {
+      return str
+    } else {
+      return str.replace(/([a-z2]+):/, "\"$1\":")
+    }
+  })
+  .join(",") + "]"
 }
