@@ -79,17 +79,21 @@
   </body>
 
   <script type="text/javascript">
+    const width = 960
+    const height = 540
+
     var app = new Vue({
       el: '#app',
       components: {Swatches: window.VueSwatches.default},
       data: {
         keycaps: {},
-        mxswitch: '',
-        chocswitch: '',
-        pcb: '',
+        mxswitch: false,
+        chocswitch: false,
+        pcb: false,
         pcbcolor: '#EEEEEE',
         colors: ['#EEEEEE', '#6A0888', '#B40404', '#151515', '#088A08', '#08298A', "#AEB404"],
         camera: "perspective",
+        curcamera: "perspective",
         renderer: false,
         scene: false,
         cameraobj: false,
@@ -129,10 +133,19 @@
       },
 
       methods: {
+        makeCamera: function(ctype) {
+          var camera
+          if (ctype == "perspective") {
+            camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 )
+          } else {
+            camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 2000 )
+          }
+          this.cameraobj = camera
+          camera.position.set( 0, 600, 0 )
+          return camera
+        },
         renderKB: function() {
           var that = this
-          const width = 960
-          const height = 540
 
           var container = document.getElementById( 'container' )
           var renderer = that.renderer
@@ -155,17 +168,9 @@
             renderer.gammaFactor = 2.2
 
             container.appendChild( renderer.domElement )
-            if (this.camera == "perspective") {
-              camera = new THREE.PerspectiveCamera( 45, width / height, 1, 2000 )
-            } else {
-              camera = new THREE.OrthographicCamera( width / - 2, width / 2, height / 2, height / - 2, 1, 2000 )
-            }
-            that.cameraobj = camera
-            camera.position.set( 0, 600, 0 )
-
-            controls = new THREE.OrbitControls( camera, renderer.domElement )
+            camera = this.makeCamera(that.camera)
+            var controls = new THREE.OrbitControls( camera, renderer.domElement )
             controls.target.set( 0, 0.5, 0 )
-            // controls.object.position.set( 200, 500, 100 )
 
             scene = new THREE.Scene()
             that.scene = scene
@@ -179,6 +184,13 @@
             const plane = new THREE.GridHelper(1900, 100, 0x888888, 0x888888)
             plane.position.y = -20
             scene.add(plane)
+          }
+
+          if (that.curcamera != that.camera) {
+            that.curcamera = that.camera
+            camera = this.makeCamera(that.camera)
+            var controls = new THREE.OrbitControls( camera, renderer.domElement )
+            controls.target.set( 0, 0.5, 0 )
           }
 
           var kb = KLEparser(that.rawdata)
