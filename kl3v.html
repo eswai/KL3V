@@ -24,12 +24,34 @@
           </div>
 
           <div class="field is-grouped">
-            <div class="field is-horizontal">
-              <div class="label">
+            <div class="control">
+              <label class="label">
                 PCB color
-              </div>
+              </label>
               <div class="control">
-                <swatches v-model="pcbcolor" :colors="colors" shapes="circles"  inline popover-to="left"></swatches>
+                <swatches v-model="pcbcolor" :colors="colors" shapes="circles" show-fallback popover-to="left"></swatches>
+              </div>
+            </div>
+
+            <div class="control">
+              <label class="label">
+                Keycap color
+              </label>
+              <div class="control">
+                <swatches v-model="keycolor" colors="material-dark" shapes="circles" show-fallback popover-to="left"></swatches>
+              </div>
+            </div>
+
+            <div class="control">
+              <label class="label">Keycap</label>
+              <div class="select">
+                <select v-model="selkeycap">
+                  <option>Original</option>
+                  <option>DSA</option>
+                  <option>XDA</option>
+                  <option>SA R3</option>
+                  <option value="Choc">Chocolate</option>
+                </select>
               </div>
             </div>
 
@@ -55,7 +77,7 @@
       <article class="message">
         <div class="message-body">
           <div class="content">
-            <p>Supported keycap profile</p>
+            <p>Supported keycap profiles</p>
             <ul>
               <li>SA R1, R2, R3, R4, SPACE</li>
               <li>DSA</li>
@@ -87,10 +109,12 @@
       components: {Swatches: window.VueSwatches.default},
       data: {
         keycaps: {},
+        selkeycap: 'Original',
         mxswitch: false,
         chocswitch: false,
         pcb: false,
         pcbcolor: '#EEEEEE',
+        keycolor: '',
         colors: ['#EEEEEE', '#6A0888', '#B40404', '#151515', '#088A08', '#08298A', "#AEB404"],
         camera: "perspective",
         curcamera: "perspective",
@@ -178,8 +202,8 @@
 
             scene.add( new THREE.AmbientLight( 0x404040 ) )
             pointLight = new THREE.PointLight( 0xffffff, 1 )
-            pointLight.position.set( 0, 2000, 800 )
-            scene.add( pointLight )
+            pointLight.position.set( 100, 2000, 300 )
+            scene.add( pointLight )        
 
             const plane = new THREE.GridHelper(1900, 100, 0x888888, 0x888888)
             plane.position.y = -20
@@ -195,11 +219,21 @@
 
           var kb = KLEparser(that.rawdata)
           kb.keys.forEach(function(key){
-            var geometry = that.keycaps[key.p]
+            var geometry
+            if (that.selkeycap == 'Original') {
+              geometry = that.keycaps[key.p]
+            } else {
+              geometry = that.keycaps[that.selkeycap]
+            }
             if (!geometry) {
               geometry = that.keycaps["DSA"]
             }
-            var material = new THREE.MeshStandardMaterial({color: key.c, metalness: 0.1, roughness: 0.2})
+            var keycol = that.keycolor == '' ? key.c : parseInt(that.keycolor.replace('#', '0x'));
+            var material = new THREE.MeshStandardMaterial({
+              color: keycol, 
+              metalness: 0.3, 
+              roughness: 0.1
+            })
             var kc = new THREE.Mesh( geometry, material )
             kc.position.x = key.centerX() * 19
             kc.position.z = key.centerY() * 19
@@ -234,7 +268,7 @@
 
             var material = new THREE.MeshStandardMaterial({color: 0x111111, metalness: 0.5, roughness: 0.7})
             var sw
-            if (key.p == "Choc") {
+            if (key.p == "Choc" || that.selkeycap == "Choc") {
               sw = new THREE.Mesh( that.chocswitch, material )
             } else {
               sw = new THREE.Mesh( that.mxswitch, material )
