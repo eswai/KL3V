@@ -50,6 +50,7 @@
                   <option>DSA</option>
                   <option>XDA</option>
                   <option>SA R3</option>
+                  <option>Cherry R3</option>
                   <option value="Choc">Chocolate</option>
                 </select>
               </div>
@@ -80,6 +81,7 @@
             <p>Supported keycap profiles</p>
             <ul>
               <li>SA R1, R2, R3, R4, SPACE</li>
+              <li>Cherry R1, R2, R3, R4, SPACE</li>
               <li>DSA</li>
               <li>XDA</li>
               <li>Kailh Chocolate "Choc"</li>
@@ -92,7 +94,7 @@
           <p>
             <strong>Keyboard Layout 3D Viewer</strong> by <a href="https://github.com/eswai/">eswai</a>. The source code is licensed
             <a href="http://opensource.org/licenses/mit-license.php">MIT</a>.
-            SA keycaps (c) <a href="https://github.com/hineybush">Josh Hinnebusch.</a>
+            SA and Cherry keycaps (c) <a href="https://github.com/hineybush">Josh Hinnebusch.</a>
             Cherry MX switch (c) <a href="https://grabcad.com/library/cherry-mx-1">Mirko Tadic.</a>
           </p>
         </div>
@@ -138,7 +140,12 @@
           'SA R3': 'sa-1u-r3.stl',
           'SA R4': 'sa-1u-r4.stl',
           'SA SPACE': 'sa-7u-space.stl',
-          'Choc': 'choc.stl'
+          'Choc': 'choc.stl',
+          'Cherry R1': 'cherry-r1.stl',
+          'Cherry R2': 'cherry-r2.stl',
+          'Cherry R3': 'cherry-r3.stl',
+          'Cherry R4': 'cherry-r4.stl',
+          'Cherry SPACE': 'cherry-space.stl'
         }
         Object.keys(this.keycaps).forEach(kn => {
           loader.load(this.keycaps[kn], stl => {
