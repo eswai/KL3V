@@ -6,6 +6,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/101/three.min.js"></script>
     <script src="js/OrbitControls.js"></script>
     <script src="js/STLLoader.js"></script>
+    <script src="js/TDSLoader.js"></script>
     <script src="js/KLEparser.js"></script>
     <script src="https://unpkg.com/vue-swatches"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
@@ -50,7 +51,7 @@
                   <option>DSA</option>
                   <option>XDA</option>
                   <option>SA R3</option>
-                  <option>Cherry R3</option>
+                  <!-- <option>Cherry R3</option> -->
                   <option value="Choc">Chocolate</option>
                 </select>
               </div>
@@ -81,7 +82,7 @@
             <p>Supported keycap profiles</p>
             <ul>
               <li>SA R1, R2, R3, R4, SPACE</li>
-              <li>Cherry R1, R2, R3, R4, SPACE</li>
+              <!-- <li>Cherry R1, R2, R3, R4, SPACE</li> -->
               <li>DSA</li>
               <li>XDA</li>
               <li>Kailh Chocolate "Choc"</li>
@@ -125,23 +126,25 @@
         cameraobj: false,
         tobj: [],
         rid: -1,
-//        rawdata: "[{x:3.5,c:\"#2840dd\",p:\"SA R1\",a:7},\"3\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",\"\",{x:4.5},\"\",\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#5c6cc3\",p:\"SA R2\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{p:\"SA R3\",h:1.5},\"\",{x:4.5,h:1.5},\"\",{p:\"SA R2\"},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#4284c8\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5,p:\"SA R3\"},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{x:6.5},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.625,x:6.5,c:\"#65b7ec\",h:1.5},\"\",{x:4.5,h:1.5},\"\"],[{y:-0.75,x:3.5,p:\"SA R4\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{x:6.5},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#81d7e2\",p:\"XDA\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.75,x:0.5},\"\",\"\",{x:14.5},\"\",\"\"],[{r:30,rx:6.5,ry:4.25,y:-1,x:1,c:\"#4e4c4c\",p:\"DSA\"},\"\",\"\"],[{h:2},\"\",{h:2},\"\",\"\"],[{x:2},\"\"],[{r:-30,rx:13,y:-1,x:-3,c:\"#483527\",p:\"Choc\"},\"\",\"\"],[{x:-3},\"\",{h:2},\"\",{h:2},\"\"],[{x:-3},\"\"]"
-        rawdata: "[{c:\"#3d3d3d\",t:\"#ffffff\",p:\"DSA\",a:7},\"Tab\",{c:\"#919191\"},\"Q\",\"W\",\"E\",\"R\",\"T\",\"-\",\"+\",\"Y\",\"U\",\"I\",\"O\",\"P\",{c:\"#3d3d3d\"},\"Back Space\"],[\"Ctrl\",{c:\"#919191\"},\"A\",\"S\",\"D\",\"F\",\"G\",\"[\",\"]\",\"H\",\"J\",\"K\",\"L\",\";\",{c:\"#3d3d3d\"},\"Ctrl\"],[\"Shift\",{c:\"#919191\"},\"Z\",\"X\",\"C\",\"V\",\"B\",\"`\",\"'\",\"N\",\"M\",\",\",\".\",\"/\",{c:\"#3d3d3d\"},\"Alt\"],[{c:\"#c2b900\",t:\"#8a8a8a\"},\"2ND\",{c:\"#3d3d3d\",t:\"#ffffff\"},\"\",\"\",\"\",{x:6,c:\"#086e6e\"},\"&larr;\",\"&darr;\",\"&uarr;\",\"&rarr;\"],[{y:-0.75,x:4,c:\"#3d3d3d\",t:\"#ffe600\"},\"LOWER\",{t:\"#ffffff\"},\"Shift\",{c:\"#919191\"},\"\",{c:\"#086e6e\"},\"Enter\",{c:\"#3d3d3d\"},\"Shift\",{t:\"#ffe600\"},\"RAISE\"]"
+        // rawdata: "[{x:3.5,c:\"#2840dd\",p:\"SA R1\",a:7},\"3\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",\"\",{x:4.5},\"\",\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#5c6cc3\",p:\"SA R2\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{p:\"SA R3\",h:1.5},\"\",{x:4.5,h:1.5},\"\",{p:\"SA R2\"},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#4284c8\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5,p:\"SA R3\"},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{x:6.5},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.625,x:6.5,c:\"#65b7ec\",h:1.5},\"\",{x:4.5,h:1.5},\"\"],[{y:-0.75,x:3.5,p:\"SA R4\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.875,x:5.5},\"\",{x:6.5},\"\"],[{y:-0.875,w:1.5},\"\",\"\",{x:14.5},\"\",{w:1.5},\"\"],[{y:-0.375,x:3.5,c:\"#81d7e2\",p:\"XDA\"},\"\",{x:10.5},\"\"],[{y:-0.875,x:2.5},\"\",{x:1},\"\",{x:8.5},\"\",{x:1},\"\"],[{y:-0.75,x:0.5},\"\",\"\",{x:14.5},\"\",\"\"],[{r:30,rx:6.5,ry:4.25,y:-1,x:1,c:\"#4e4c4c\",p:\"DSA\"},\"\",\"\"],[{h:2},\"\",{h:2},\"\",\"\"],[{x:2},\"\"],[{r:-30,rx:13,y:-1,x:-3,c:\"#483527\",p:\"Choc\"},\"\",\"\"],[{x:-3},\"\",{h:2},\"\",{h:2},\"\"],[{x:-3},\"\"]"
+        // rawdata: "[{c:\"#3d3d3d\",t:\"#ffffff\",p:\"DSA\",a:7},\"Tab\",{c:\"#919191\"},\"Q\",\"W\",\"E\",\"R\",\"T\",\"-\",\"+\",\"Y\",\"U\",\"I\",\"O\",\"P\",{c:\"#3d3d3d\"},\"Back Space\"],[\"Ctrl\",{c:\"#919191\"},\"A\",\"S\",\"D\",\"F\",\"G\",\"[\",\"]\",\"H\",\"J\",\"K\",\"L\",\";\",{c:\"#3d3d3d\"},\"Ctrl\"],[\"Shift\",{c:\"#919191\"},\"Z\",\"X\",\"C\",\"V\",\"B\",\"`\",\"'\",\"N\",\"M\",\",\",\".\",\"/\",{c:\"#3d3d3d\"},\"Alt\"],[{c:\"#c2b900\",t:\"#8a8a8a\"},\"2ND\",{c:\"#3d3d3d\",t:\"#ffffff\"},\"\",\"\",\"\",{x:6,c:\"#086e6e\"},\"&larr;\",\"&darr;\",\"&uarr;\",\"&rarr;\"],[{y:-0.75,x:4,c:\"#3d3d3d\",t:\"#ffe600\"},\"LOWER\",{t:\"#ffffff\"},\"Shift\",{c:\"#919191\"},\"\",{c:\"#086e6e\"},\"Enter\",{c:\"#3d3d3d\"},\"Shift\",{t:\"#ffe600\"},\"RAISE\"]"
+        // rawdata : "[{c:\"#575757\",t:\"#ffffff\",p:\"DSA\",w:1.25},\"Tab\",{c:\"#e3e3e3\",t:\"#000000\",f:6},\"Q\",\"W\",\"E\",\"R\",\"T\",\"Y\",\"U\",\"I\",\"O\",\"P\",{c:\"#575757\",t:\"#ffffff\",f:3,w:1.75},\"Backspace\"],[{w:1.25},\"Menu\",{c:\"#e3e3e3\",t:\"#000000\",f:6},\"A\",\"S\",\"D\",\"F\",\"G\",\"H\",\"J\",\"K\",\"L\",\":\\n;\",{c:\"#575757\",t:\"#ffffff\",f:3,w:1.75},\"Enter\"],[{w:1.25},\"Shift\",{c:\"#e3e3e3\",t:\"#000000\",f:6},\"Z\",\"X\",\"C\",\"V\",\"B\",\"N\",\"M\",\"<\\n,\",\">\\n.\",\"?\\n/\",{c:\"#ab0202\",t:\"#ffffff\",f:3},\"↑\",{c:\"#575757\"},\"Esc\"],[{w:1.25},\"Ctrl\",{w:1.25},\"Data\",{w:1.5},\"FN\",\"META\",{w:1.25},\"Alt\",{w:1.25},\"Ctrl\",\"SUPER\",{w:1.5},\"FN\",{x:0.25,c:\"#ab0202\",t:\"#e3e3e3\"},\"←\",\"↓\",\"→\"]"
+        rawdata: "[{r:10,rx:1,y:-0.1,x:2,c:\"#e3e3e3\"},\"E\"],[{y:-0.65,x:1},\"W\",{x:1},\"R\"],[{y:-0.75},\"Q\"],[{y:-0.9,x:4},\"T\"],[{y:-0.7,x:2},\"D\"],[{y:-0.65,x:1},\"S\",{x:1},\"F\"],[{y:-0.75},\"A\"],[{y:-0.9,x:4},\"G\"],[{y:-0.7,x:2},\"C\"],[{y:-0.65,x:1},\"X\",{x:1},\"V\"],[{y:-0.75},\"Z\"],[{y:-0.9,x:4},\"B\"],[{y:-0.75,x:5,c:\"#575757\",t:\"#ffffff\",h:1.5},\"Ctrl\"],[{y:-0.95,x:2},\"super\"],[{y:-0.65,x:1},\"Tab\",{x:1},\"Shift\"],[{y:-0.75,c:\"#ab0202\",t:\"#e3e3e3\"},\"Esc\"],[{y:-0.9,x:4,c:\"#575757\",t:\"#ffffff\"},\"Bksp\"],[{r:-10,rx:7,ry:0.965,y:-0.2,x:2,c:\"#e3e3e3\",t:\"#000000\"},\"I\"],[{y:-0.65,x:1},\"U\",{x:1},\"O\"],[{y:-0.75,x:4},\"P\"],[{y:-0.9},\"Y\"],[{y:-0.7,x:2},\"K\"],[{y:-0.65,x:1},\"J\",{x:1},\"L\"],[{y:-0.75,x:4},\":\"],[{y:-0.9},\"H\"],[{y:-0.7,x:2},\"<\"],[{y:-0.65,x:1},\"M\",{x:1},\">\"],[{y:-0.75,x:4},\"?\"],[{y:-0.9},\"N\"],[{y:-0.75,x:-1,c:\"#575757\",t:\"#ffffff\",h:1.5},\"Alt\"],[{y:-0.95,x:2,c:\"#e3e3e3\",t:\"#000000\"},\"_\"],[{y:-0.65,x:1,c:\"#575757\",t:\"#ffffff\"},\"fn\",{x:1,c:\"#e3e3e3\",t:\"#000000\"},\"\\\"\"],[{y:-0.75,x:4,c:\"#ab0202\",t:\"#e3e3e3\"},\"Enter\"],[{y:-0.9,c:\"#e3e3e3\",t:\"#000000\"},\"Space\"]"
       },
 
       created: function() {
         console.log("Loading keycaps...")
-        var loader = new THREE.STLLoader()
-        loader.setPath('./models/')
+        var tloader = new THREE.TDSLoader()
+        tloader.setPath('./models/')
         this.keycaps = {
-          'DSA': 'dsa.stl',
-          'XDA': 'xda.stl',
+          'DSA': 'dsa.3ds',
+          'XDA': 'xda.3ds',
           // 'SA R1': 'sa-1u-r1.stl',
           // 'SA R2': 'sa-1u-r2.stl',
-          // 'SA R3': 'sa-1u-r3.stl',
+          'SA R3': 'sa-1u-r3.3ds',
           // 'SA R4': 'sa-1u-r4.stl',
           // 'SA SPACE': 'sa-7u-space.stl',
-          // 'Choc': 'choc.stl',
+          'Choc': 'choc.3ds',
           // 'Cherry R1': 'cherry-r1.stl',
           // 'Cherry R2': 'cherry-r2.stl',
           // 'Cherry R3': 'cherry-r3.stl',
@@ -149,59 +152,26 @@
           // 'Cherry SPACE': 'cherry-space.stl'
         }
         Object.keys(this.keycaps).forEach(kn => {
-          loader.load(this.keycaps[kn], stl => {
-            var attrib = stl.getAttribute('position');
-            if(attrib === undefined) {
-                throw new Error('a given BufferGeometry object must have a position attribute.');
-            }
-            var positions = attrib.array;
-            var vertices = [];
-            for(var i = 0, n = positions.length; i < n; i += 3) {
-                var x = positions[i];
-                var y = positions[i + 1];
-                var z = positions[i + 2];
-                vertices.push(new THREE.Vector3(x, y, z));
-            }
-            var faces = [];
-            for(var i = 0, n = vertices.length; i < n; i += 3) {
-                faces.push(new THREE.Face3(i, i + 1, i + 2));
-            }
-
-            var geometry = new THREE.Geometry();
-            geometry.vertices = vertices;
-            geometry.faces = faces;
-            geometry.computeFaceNormals();              
-            geometry.mergeVertices()
-            geometry.computeVertexNormals();
-
-            geometry.faceVertexUvs[0] = [];
-            geometry.faces.forEach(function(face) {
-              // var components = ['x', 'y', 'z'].sort(function(a, b) {
-              //   return Math.abs(face.normal[a]) > Math.abs(face.normal[b]);
-              // });
-              var components = ['x', 'z', 'y']
-              var v1 = geometry.vertices[face.a];
-              var v2 = geometry.vertices[face.b];
-              var v3 = geometry.vertices[face.c];
-              geometry.faceVertexUvs[0].push([
-                new THREE.Vector2(v1[components[0]]/18, -v1[components[1]]/18),
-                new THREE.Vector2(v2[components[0]]/18, -v2[components[1]]/18),
-                new THREE.Vector2(v3[components[0]]/18, -v3[components[1]]/18)
-              ]);
-            });
-            geometry.uvsNeedUpdate = true;
-
-            this.keycaps[kn] = geometry
+          tloader.load(this.keycaps[kn], obj => {
+            obj.traverse(function ( child ) {
+              if ( child instanceof THREE.Mesh ) {
+                child.geometry.computeBoundingBox()
+              }
+            })
+            this.keycaps[kn] = obj
             console.log(kn + ' loaded')
           })
         })
-        loader.load('pcb.stl', stl => {
+
+        var sloader = new THREE.STLLoader()
+        sloader.setPath('./models/')
+        sloader.load('pcb.stl', stl => {
           this.pcb = stl
         })
-        loader.load('mx-switch.stl', stl => {
+        sloader.load('mx-switch.stl', stl => {
           this.mxswitch = stl
         })
-        loader.load('choc-switch.stl', stl => {
+        sloader.load('choc-switch.stl', stl => {
           this.chocswitch = stl
         })
       },
@@ -267,16 +237,17 @@
             controls.target.set( 0, 0.5, 0 )
           }
 
+          // parse KLE data and render keyboard
           var kb = KLEparser(that.rawdata)
           kb.keys.forEach(function(key){
-
             var keycol = that.keycolor == '' ? key.c : that.keycolor
 
+            // create keycap texture
             var canvas = document.createElement("canvas")
             canvas.height = 256
             canvas.width = 256
             var context = canvas.getContext("2d")
-            var size = 12 * key.f
+            var size = 15 * key.f
             context.fillStyle = keycol
             context.fillRect(0, 0, canvas.width, canvas.height)
             context.font = size + "px Arial"
@@ -285,9 +256,10 @@
             context.fillStyle = key.t
             context.fillText(key.kc, canvas.width / 2, canvas.height / 2)
             var texture = new THREE.Texture(canvas)
-            texture.offset = new THREE.Vector2(0.5, 0.5)
+            // texture.offset = new THREE.Vector2(0.5, 0.5)
             texture.needsUpdate = true
 
+            // Keycap model
             var geometry
             if (that.selkeycap == 'Original') {
               geometry = that.keycaps[key.p]
@@ -297,21 +269,20 @@
             if (!geometry) {
               geometry = that.keycaps["DSA"]
             }
+            var kc = geometry.clone()
+
+            // apply texture on keycap
             var material = new THREE.MeshStandardMaterial({
               map : texture
             })
-            // geometry = new THREE.BoxGeometry( 18, 11, 18 );
-            var kc = new THREE.Mesh(geometry, material)
-            // kc.overdraw = true
-
-            // kc.traverse(function(child) {
-            //   if (child instanceof THREE.Mesh) {
-            //     child.material.map = texture
-            //   }
-            // })
-            texture.needsUpdate = true
+            kc.traverse(function(child) {
+              if (child instanceof THREE.Mesh) {
+                child.material = material
+              }
+            })
             that.tobj.push(texture)
 
+            // allocate keycap
             kc.position.x = key.centerX() * 19
             kc.position.z = key.centerY() * 19
             kc.scale.x = key.scaleW()
@@ -320,6 +291,7 @@
             scene.add(kc)
             that.tobj.push(kc)
 
+            // top plate
             var material = new THREE.MeshStandardMaterial({color: that.pcbcolor, metalness: 0.5, roughness: 0.7})
             var pcb1 = new THREE.Mesh( that.pcb, material )
             var sx = key.w * 19 / 23 + 4 / 23
@@ -333,16 +305,19 @@
             scene.add(pcb1)
             that.tobj.push(pcb1)
 
+            // PCB
             var pcb2 = pcb1.clone()
             pcb2.position.y = -12
             scene.add(pcb2)
             that.tobj.push(pcb2)
 
+            // bottom plate
             var pcb3 = pcb1.clone()
             pcb3.position.y = -16
             scene.add(pcb3)
             that.tobj.push(pcb3)
 
+            // key switch
             var material = new THREE.MeshStandardMaterial({color: 0x111111, metalness: 0.5, roughness: 0.7})
             var sw
             if (key.p == "Choc" || that.selkeycap == "Choc") {

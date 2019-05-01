@@ -62,12 +62,13 @@ function KLEparser(raw) {
   var dx = 0
   var dy = 0
   var p = "DSA"
-  var c = 0xcfd8dc
-  var t = 0xffffff
+  var c = "#cfd8dc"
+  var t = "#000000"
   var f = 3
   var f2 = 3
   var keys = []
   var keyboard = {keys: keys}
+  var fflag = false
 
   layout.forEach(function(row){
     if (Array.isArray(row)) {
@@ -76,6 +77,9 @@ function KLEparser(raw) {
           var kc = key
           var px = (rx + Math.cos(r) * ax - Math.sin(r) * ay)
           var py = (ry + Math.sin(r) * ax + Math.cos(r) * ay)
+          if (!fflag) {
+            f = kc.length == 1 ? 5 : 3
+          }
 
           keys.push(new Key(kc, px, py, r, w, h, p, c, t, f, f2))
 
@@ -106,7 +110,10 @@ function KLEparser(raw) {
           p = key.p ? key.p : p
           c = key.c ? key.c : c
           t = key.t ? key.t : t
-          f = key.f ? parseInt(key.f) : f
+          if (key.f) {
+            f = parseInt(key.f)
+            fflag = true
+          }
           f2 = key.f2 ? parseInt(key.f2) : f2
           r = "r" in key ? key.r / 180 * Math.PI : r
         }
