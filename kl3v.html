@@ -286,7 +286,9 @@
 
             // apply texture on keycap
             var material = new THREE.MeshStandardMaterial({
-              map : texture
+              map : texture, 
+              metalness: 0.5, 
+              roughness: 0.6
             })
             kc.traverse(function(child) {
               if (child instanceof THREE.Mesh) {
