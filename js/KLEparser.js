@@ -13,6 +13,10 @@ class Key {
     this.f2 = f2
   }
 
+  mainKey() {
+    return this.kc[this.kc.length - 1]
+  }
+
   centerX() {
     return this.x + Math.cos(this.r) * this.w / 2 - Math.sin(this.r) * this.h / 2
   }
@@ -74,11 +78,11 @@ function KLEparser(raw) {
     if (Array.isArray(row)) {
       row.forEach(function(key){
         if (typeof key == 'string') {
-          var kc = key
+          var kc = key.split("\n")
           var px = (rx + Math.cos(r) * ax - Math.sin(r) * ay)
           var py = (ry + Math.sin(r) * ax + Math.cos(r) * ay)
           if (!fflag) {
-            f = kc.length == 1 ? 5 : 3
+            f = kc[kc.length - 1].length == 1 ? 5 : 3
           }
 
           keys.push(new Key(kc, px, py, r, w, h, p, c, t, f, f2))
@@ -128,7 +132,7 @@ function KLEparser(raw) {
 
 function raw2json(rawdata) {
   return "[" + rawdata
-  .replace(/(\\\\)|(\\\")|(\\n)/g, "")
+  .replace(/(\\\\)|(\\\")/g, "")
   .split(",")
   .map(function(str) {
     if (str.match(/^\"/)) {

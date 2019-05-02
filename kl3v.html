@@ -44,6 +44,15 @@
             </div>
 
             <div class="control">
+              <label class="label">
+                Legend color
+              </label>
+              <div class="control">
+                <swatches v-model="legendcolor" colors="basic" shapes="circles" show-fallback popover-to="left"></swatches>
+              </div>
+            </div>
+
+            <div class="control">
               <label class="label">Keycap</label>
               <div class="select">
                 <select v-model="selkeycap">
@@ -120,6 +129,7 @@
         pcb: false,
         pcbcolor: '#EEEEEE',
         keycolor: '',
+        legendcolor: '',
         colors: ['#EEEEEE', '#6A0888', '#B40404', '#151515', '#088A08', '#08298A', "#AEB404"],
         camera: "perspective",
         curcamera: "perspective",
@@ -243,6 +253,7 @@
           var kb = KLEparser(that.rawdata)
           kb.keys.forEach(function(key){
             var keycol = that.keycolor == '' ? key.c : that.keycolor
+            var legcol = that.legendcolor == '' ? key.t : that.legendcolor
 
             // create keycap texture
             var canvas = document.createElement("canvas")
@@ -255,8 +266,8 @@
             context.font = size + "px Arial"
             context.textAlign = "center"
             context.textBaseline = "middle"
-            context.fillStyle = key.t
-            context.fillText(key.kc, canvas.width / 2, canvas.height / 2)
+            context.fillStyle = legcol
+            context.fillText(key.mainKey(), canvas.width / 2, canvas.height / 2)
             var texture = new THREE.Texture(canvas)
             // texture.offset = new THREE.Vector2(0.5, 0.5)
             texture.needsUpdate = true
